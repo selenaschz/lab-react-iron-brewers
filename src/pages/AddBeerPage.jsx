@@ -1,4 +1,6 @@
+import axios from "axios";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function AddBeerPage() {
   // State variables to store the values of the form inputs. You can leave these as they are.
@@ -10,6 +12,7 @@ function AddBeerPage() {
   const [brewersTips, setBrewersTips] = useState("");
   const [attenuationLevel, setAttenuationLevel] = useState(0);
   const [contributedBy, setContributedBy] = useState("");
+  const navigate = useNavigate();
 
   // Handler functions for the form inputs. You can leave these as they are.
   const handleName = (e) => setName(e.target.value);
@@ -20,12 +23,32 @@ function AddBeerPage() {
   const handleBrewersTips = (e) => setBrewersTips(e.target.value);
   const handleAttenuationLevel = (e) => setAttenuationLevel(e.target.value);
   const handleContributedBy = (e) => setContributedBy(e.target.value);
-
+  
 
 
   // TASK:
   // 1. Create a function to handle the form submission and send the form data to the Beers API to create a new beer.
   // 2. Use axios to make a POST request to the Beers API.
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    axios.post("https://ih-beers-api2.herokuapp.com/beers/new", {
+      name: name,
+      tagline: tagline,
+      description: description,
+      image_url: imageUrl,
+      first_brewed: firstBrewed,
+      brewers_tips: brewersTips,
+      attenuation_level: attenuationLevel,
+      contributed_by: contributedBy,
+    })
+    .then((response) => {
+      console.log("Beer created", response.data);
+      navigate("/")
+    })
+    .catch(((error) => console.error("Error: ", error)))
+
+  }
+
   // 3. Once the beer is created, navigate the user to the page showing the list of all beers.
 
 
@@ -34,7 +57,7 @@ function AddBeerPage() {
   return (
     <>
       <div className="d-inline-flex flex-column w-100 p-4">
-        <form>
+        <form onSubmit={event => handleSubmit(event)}>
           <label>Name</label>
           <input
             className="form-control mb-4"
@@ -122,7 +145,7 @@ function AddBeerPage() {
             value={contributedBy}
             onChange={handleContributedBy}
           />
-          <button className="btn btn-primary btn-round">Add Beer</button>
+          <button  className="btn btn-primary btn-round">Add Beer</button>
         </form>
       </div>
     </>
